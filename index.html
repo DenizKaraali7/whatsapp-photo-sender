@@ -1,42 +1,115 @@
-// Adım 1: Kendi 10 fotoğrafınızın herkese açık URL'lerini buraya ekleyin.
-const photoUrls = [
-    'https://ornek-site.com/foto1.jpg',
-    'https://ornek-site.com/foto2.jpg',
-    // ... 10 adet URL buraya eklenecek
-];
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG Galeri ve Basit WhatsApp Paylaşımı</title>
+    <style>
+        /* CSS Stilleri (Görünüm) */
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        #photo-gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .photo-container { 
+            border: 4px solid #f9f9f9; padding: 5px; background-color: white; border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); cursor: pointer; transition: all 0.2s ease-in-out; 
+            position: relative; width: 160px; height: 160px; overflow: hidden;
+        }
+        .photo-container:hover { 
+            transform: scale(1.05); border-color: #25D366; 
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+        }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; display: block; }
+        .photo-index {
+            position: absolute; top: 10px; right: 10px; 
+            background-color: #25D366; color: white; 
+            padding: 5px 10px; border-radius: 50%; 
+            font-size: 14px; font-weight: bold; line-height: 1;
+        }
+        .photo-title {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 5px;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
 
-// ... (Kalan HTML ve JavaScript kodunda)
+    <h1>⭐ Beğendiğiniz Ayakkabıyı Seçin ve WhatsApp ile Bize Ulaştırın!</h1>
 
-// displayPhoto fonksiyonu, artık dosya okumak yerine URL kullanacak:
-function displayPhoto(url, index) {
-    const container = document.createElement('div');
-    container.className = 'photo-container';
-    
-    const img = document.createElement('img');
-    img.src = url; // ⭐️ URL'yi doğrudan kullanıyoruz
-    img.alt = `Fotoğraf ${index}`;
-    // ... (Diğer etiketler ve tıklama olayı)
-    
-    container.addEventListener('click', () => {
-        sendToWhatsApp(index, url); // URL'yi de gönderiyoruz
-    });
-}
+    <div id="photo-gallery">
+        </div>
 
-// sendToWhatsApp fonksiyonu, URL'yi mesaja ekleyecek:
-function sendToWhatsApp(index, photoUrl) {
-    // Mesaj metni: Hem sıra numarası hem de fotoğrafın URL'si
-    const message = encodeURIComponent(
-        `Merhaba, siteden ${index}. fotoğrafı seçildi. Fotoğraf linki: ${photoUrl}`
-    );
-    
-    // Sizin WhatsApp numaranız (Örn: 905321234567)
-    const yourNumber = '905XXXYYYYZZ'; 
-    const whatsappUrl = `https://wa.me/${yourNumber}?text=${message}`;
+    <script>
+        // 🚨 GÜNCELLEME GEREKLİ ALAN 1: Fotoğraf verilerini buraya girin.
+        // URL'leriniz GitHub'daki PNG dosyalarınızın linkleri olmalıdır.
+        const productList = [
+            { id: 1, name: "Klasik Sneaker", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_1.png' },
+            { id: 2, name: "Kırmızı Spor Ayakkabı", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_2.png' },
+            { id: 3, name: "Beyaz Bot", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_3.png' },
+            { id: 4, name: "Koşu Ayakkabısı Mavi", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_4.png' },
+            { id: 5, name: "Yazlık Terlik", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_5.png' },
+            { id: 6, name: "Deri Casual Ayakkabı", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_6.png' },
+            { id: 7, name: "Yüksek Topuklu", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_7.png' },
+            { id: 8, name: "Kışlık Çizme", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_8.png' },
+            { id: 9, name: "Outdoor Ayakkabı", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_9.png' },
+            { id: 10, name: "Retro Ayakkabı", url: 'https://raw.githubusercontent.com/KullaniciAdiniz/whatsapp-galeri/main/ayakkabi_10.png' }
+        ];
 
-    window.open(whatsappUrl, '_blank');
-}
+        // 🚨 GÜNCELLEME GEREKLİ ALAN 2: Kendi WhatsApp numaranızı (Ülke kodu dahil, boşluk olmadan) yazın
+        const yourNumber = '905XXXYYYYZZ'; 
 
-// Sayfa yüklendiğinde tüm fotoğrafları göster
-photoUrls.forEach((url, index) => {
-    displayPhoto(url, index + 1);
-});
+        const gallery = document.getElementById('photo-gallery');
+
+        // Fotoğrafı galeriye ekleyen ve tıklama olayını tanımlayan fonksiyon
+        function displayProduct(product) {
+            const container = document.createElement('div');
+            container.className = 'photo-container';
+            
+            const img = document.createElement('img');
+            img.src = product.url; 
+            img.alt = product.name;
+
+            const indexLabel = document.createElement('div');
+            indexLabel.className = 'photo-index';
+            indexLabel.textContent = product.id;
+
+            const titleLabel = document.createElement('div');
+            titleLabel.className = 'photo-title';
+            titleLabel.textContent = product.name;
+
+            container.appendChild(img);
+            container.appendChild(indexLabel);
+            container.appendChild(titleLabel);
+            gallery.appendChild(container);
+
+            // Tıklama olayını ekle
+            container.addEventListener('click', () => {
+                sendToWhatsApp(product.id, product.name);
+            });
+        }
+
+        // WhatsApp'a mesaj gönderme fonksiyonu
+        function sendToWhatsApp(id, name) {
+            // Mesaj metni sadece ID ve adı içerecek şekilde hazırlandı
+            const message = encodeURIComponent(
+                `Merhaba, galerinizden şu ürünü seçtim: ${id}. Ayakkabı (${name}). Detaylı bilgi almak istiyorum.`
+            );
+            
+            // WhatsApp URL'si oluşturuluyor
+            const whatsappUrl = `https://wa.me/${yourNumber}?text=${message}`;
+
+            // Yeni sekmede aç
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Sayfa yüklendiğinde tüm ürünleri göster
+        productList.forEach(product => {
+            displayProduct(product);
+        });
+    </script>
+
+</body>
+</html>
