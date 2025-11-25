@@ -1,163 +1,42 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fotoğraf Seç ve WhatsApp'a Gönder</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-            background-color: #f4f4f9;
-        }
-        #photo-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .photo-container {
-            border: 2px solid #ccc;
-            padding: 5px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            width: 150px;
-            height: 150px;
-            overflow: hidden;
-        }
-        .photo-container:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .photo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-            display: block;
-        }
-        .photo-index {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        #file-input-label {
-            display: inline-block;
-            background-color: #25D366; /* WhatsApp yeşili */
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        #file-input-label:hover {
-            background-color: #1DA84E;
-        }
-        #file-input {
-            display: none; /* Gerçek dosya inputunu gizle */
-        }
-    </style>
-</head>
-<body>
+// Adım 1: Kendi 10 fotoğrafınızın herkese açık URL'lerini buraya ekleyin.
+const photoUrls = [
+    'https://ornek-site.com/foto1.jpg',
+    'https://ornek-site.com/foto2.jpg',
+    // ... 10 adet URL buraya eklenecek
+];
 
-    <h1>📸 10 Fotoğraf Seç ve WhatsApp ile Paylaş</h1>
-    <p>Maksimum 10 fotoğraf seçebilirsiniz. Bir fotoğrafı seçmek, sıra numarasını WhatsApp'a mesaj olarak gönderecektir.</p>
+// ... (Kalan HTML ve JavaScript kodunda)
 
-    <label for="file-input" id="file-input-label">Fotoğraf Seç (Maksimum 10)</label>
-    <input type="file" id="file-input" accept="image/*" multiple>
+// displayPhoto fonksiyonu, artık dosya okumak yerine URL kullanacak:
+function displayPhoto(url, index) {
+    const container = document.createElement('div');
+    container.className = 'photo-container';
+    
+    const img = document.createElement('img');
+    img.src = url; // ⭐️ URL'yi doğrudan kullanıyoruz
+    img.alt = `Fotoğraf ${index}`;
+    // ... (Diğer etiketler ve tıklama olayı)
+    
+    container.addEventListener('click', () => {
+        sendToWhatsApp(index, url); // URL'yi de gönderiyoruz
+    });
+}
 
-    <hr>
+// sendToWhatsApp fonksiyonu, URL'yi mesaja ekleyecek:
+function sendToWhatsApp(index, photoUrl) {
+    // Mesaj metni: Hem sıra numarası hem de fotoğrafın URL'si
+    const message = encodeURIComponent(
+        `Merhaba, siteden ${index}. fotoğrafı seçildi. Fotoğraf linki: ${photoUrl}`
+    );
+    
+    // Sizin WhatsApp numaranız (Örn: 905321234567)
+    const yourNumber = '905XXXYYYYZZ'; 
+    const whatsappUrl = `https://wa.me/${yourNumber}?text=${message}`;
 
-    <div id="photo-gallery">
-        </div>
+    window.open(whatsappUrl, '_blank');
+}
 
-    <script>
-        const fileInput = document.getElementById('file-input');
-        const gallery = document.getElementById('photo-gallery');
-        let selectedFiles = []; // Seçilen dosyaları saklamak için
-
-        fileInput.addEventListener('change', handleFiles);
-
-        function handleFiles(event) {
-            // Önceki galeri içeriğini temizle
-            gallery.innerHTML = ''; 
-            selectedFiles = [];
-
-            const files = event.target.files;
-            
-            // Maksimum 10 fotoğraf kontrolü
-            if (files.length > 10) {
-                alert(`Maksimum 10 fotoğraf seçebilirsiniz. Şu anda ${files.length} adet seçtiniz.`);
-                fileInput.value = ''; // Seçimi sıfırla
-                return;
-            }
-
-            if (files.length === 0) {
-                return;
-            }
-
-            // Seçilen dosyaları diziye ekle
-            for (let i = 0; i < files.length; i++) {
-                selectedFiles.push(files[i]);
-                displayPhoto(files[i], i + 1);
-            }
-        }
-
-        function displayPhoto(file, index) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const container = document.createElement('div');
-                container.className = 'photo-container';
-                container.dataset.index = index; // Hangi fotoğraf olduğunu tut
-
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.alt = `Fotoğraf ${index}`;
-
-                const indexLabel = document.createElement('div');
-                indexLabel.className = 'photo-index';
-                indexLabel.textContent = index;
-
-                container.appendChild(img);
-                container.appendChild(indexLabel);
-                gallery.appendChild(container);
-
-                // Tıklama olayını ekle
-                container.addEventListener('click', () => {
-                    sendToWhatsApp(index);
-                });
-            };
-
-            reader.readAsDataURL(file); // Dosyayı okumayı başlat
-        }
-
-        function sendToWhatsApp(index) {
-            // Paylaşılacak metni hazırla
-            const message = encodeURIComponent(`Merhaba, siteden ${index}. fotoğrafı seçtim.`);
-            
-            // Kullanıcının numarası yok, bu yüzden sadece mesajı hazırlarız.
-            // Kullanıcı mobil cihazdaysa WhatsApp uygulaması açılır.
-            // Web'deyse (masaüstü) WhatsApp Web açılır.
-            const whatsappUrl = `https://wa.me/?text=${message}`;
-
-            window.open(whatsappUrl, '_blank');
-        }
-    </script>
-
-</body>
-</html>
+// Sayfa yüklendiğinde tüm fotoğrafları göster
+photoUrls.forEach((url, index) => {
+    displayPhoto(url, index + 1);
+});
